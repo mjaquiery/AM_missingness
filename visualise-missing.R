@@ -28,3 +28,16 @@ d_miss %>%
   mutate(missing = is.na(value)) %>%
   ggplot(aes(x = var, y = id, fill = missing)) +
   geom_tile(colour = NA)
+
+# Add a summary variable for any missing
+d_miss$any <- apply(d_miss, 1, function(r) ifelse(any(is.na(r)), NA, F))
+
+# Plot numbers of missing
+d_miss %>%
+  pivot_longer(cols = -id, names_to = "var") %>%
+  mutate(missing = is.na(value)) %>%
+  group_by(var) %>%
+  summarise(missing = sum(missing)) %>%
+  ggplot(aes(x = var, y = missing)) +
+  geom_col() +
+  scale_y_continuous(limits = c(0, nrow(d)))
