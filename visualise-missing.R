@@ -37,7 +37,8 @@ d_miss %>%
   pivot_longer(cols = -id, names_to = "var") %>%
   mutate(missing = is.na(value)) %>%
   group_by(var) %>%
-  summarise(missing = sum(missing)) %>%
+  summarise(missing = sum(missing), .groups = 'drop') %>%
   ggplot(aes(x = var, y = missing)) +
   geom_col() +
+  geom_text(aes(y = missing + nrow(d) / 20, label = missing)) +
   scale_y_continuous(limits = c(0, nrow(d)))
