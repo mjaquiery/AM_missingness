@@ -6,7 +6,8 @@ d_aov <- d %>%
     covar_001 = as.numeric(runif(nrow(d)) < .5)
   ) %>%
   select(id, riskCategory, everything()) %>%
-  mutate(id = factor(id))
+  mutate(id = factor(id)) %>%
+  filter(as.numeric(id) < 30)
 
 library(ez)
 
