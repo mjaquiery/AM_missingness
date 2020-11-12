@@ -60,7 +60,7 @@ d_miss$any <- apply(d_miss, 1, function(r) ifelse(any(is.na(r)), NA, F))
 
 # Plot numbers of missing
 d_miss %>%
-  pivot_longer(cols = -id, names_to = "var") %>%
+  pivot_longer(cols = where(is.logical), names_to = "var") %>%
   mutate(missing = is.na(value)) %>%
   group_by(var) %>%
   summarise(missing = sum(missing), .groups = 'drop') %>%
