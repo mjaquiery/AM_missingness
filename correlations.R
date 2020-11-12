@@ -1,4 +1,5 @@
 # Correlations between logical and continuous variables
+library(psych)
 
 d_long <- d %>% 
   pivot_longer(
