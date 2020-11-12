@@ -52,3 +52,20 @@ mat
 
 ggplot(df, aes(x = a, y = b, fill = cor, colour = types)) +
   geom_tile()
+
+# Neater correlation plot
+as_tibble(mat) %>%
+  mutate(a = unique(df$a)) %>%
+  pivot_longer(cols = -a, names_to = 'b', values_to = 'cor') %>%
+  mutate(
+    types = map2_chr(a, b, function(.x, .y) {
+      types <- c(
+        typeof(pull(d_long, .x)),
+        typeof(pull(d_long, .y))
+      )
+      types <- types[order(types)]
+      paste0(types[1], ' v ', types[2])
+    })
+  ) %>%
+  ggplot(aes(x = a, y = b, fill = cor, colour = types)) +
+  geom_raster()
