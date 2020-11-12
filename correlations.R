@@ -14,17 +14,27 @@ d_wide <- d_long %>%
   ) %>% 
   pivot_wider(names_from = timepoint, values_from = dad:child)
 
+# Add a zero-variance variable to upset us
+d_wide <- d_wide %>%
+  mutate(
+    badVar = 1
+  )
+
 doCor <- function(var1, var2, data) {
   a <- pull(data, var1)
   b <- pull(data, var2)
   
-  out <- NULL
+  out <- tryCatch(
+    {
+      if (typeof(a) == 'logical' && typeof(b) == 'logical') {
+        phi(table(a, b))
+      } else {
+        cor(a, b, method = 'pearson')
+      }
+    },
+    error = function(e) {NA_real_}
+  )
   
-  if (typeof(a) == 'logical' && typeof(b) == 'logical') {
-    out <- phi(table(a, b))
-  } else {
-    out <- cor(a, b, method = 'pearson')
-  }
   
   out
 }
