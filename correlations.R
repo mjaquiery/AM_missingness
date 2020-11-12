@@ -66,7 +66,9 @@ as_tibble(mat) %>%
       )
       types <- types[order(types)]
       paste0(types[1], ' v ', types[2])
-    })
+    }),
+    types = if_else(is.na(cor), NA_character_, types)
   ) %>%
   ggplot(aes(x = a, y = b, fill = cor, colour = types)) +
-  geom_raster()
+  geom_tile() +
+  geom_text(aes(label = round(cor, 3)))
