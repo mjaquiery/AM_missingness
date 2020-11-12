@@ -29,19 +29,21 @@ doCor <- function(var1, var2, data) {
   out
 }
 
+getTypes <- function(var1, var2, data) {
+  types <- c(
+    typeof(pull(data, var1)),
+    typeof(pull(data, var2))
+  )
+  types <- types[order(types)]
+  paste0(types[1], ' v ', types[2])
+}
+
 df <- crossing(
   a = names(d_long)[-1], b = names(d_long[-1])
 ) %>%
   mutate(
     cor = map2_dbl(a, b, ~doCor(.x, .y, d_long)),
-    types = map2_chr(a, b, function(.x, .y) {
-      types <- c(
-        typeof(pull(d_long, .x)),
-        typeof(pull(d_long, .y))
-      )
-      types <- types[order(types)]
-      paste0(types[1], ' v ', types[2])
-    })
+    types = map2_chr(a, b, ~getTypes(.x, .y, d_long))
   )
 
 mat <- matrix(df$cor, nrow = sqrt(nrow(df)), ncol = sqrt(nrow(df)), byrow = T)
@@ -59,14 +61,7 @@ as_tibble(mat) %>%
   mutate(a = unique(df$a)) %>%
   pivot_longer(cols = -a, names_to = 'b', values_to = 'cor') %>%
   mutate(
-    types = map2_chr(a, b, function(.x, .y) {
-      types <- c(
-        typeof(pull(d_long, .x)),
-        typeof(pull(d_long, .y))
-      )
-      types <- types[order(types)]
-      paste0(types[1], ' v ', types[2])
-    }),
+    types = map2_chr(a, b, ~getTypes(.x, .y, d_long)),
     types = if_else(is.na(cor), NA_character_, types)
   ) %>%
   ggplot(aes(x = a, y = b, fill = cor, colour = types)) +
