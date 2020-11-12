@@ -8,7 +8,7 @@ d_long <- d %>%
     names_pattern = "(.+)_(.+)"
   ) 
 
-d_long <- d_long %>%
+d_wide <- d_long %>%
   mutate(
     mum = mum < 0
   ) %>% 
@@ -39,11 +39,11 @@ getTypes <- function(var1, var2, data) {
 }
 
 df <- crossing(
-  a = names(d_long)[-1], b = names(d_long[-1])
+  a = names(d_wide)[-1], b = names(d_wide[-1])
 ) %>%
   mutate(
-    cor = map2_dbl(a, b, ~doCor(.x, .y, d_long)),
-    types = map2_chr(a, b, ~getTypes(.x, .y, d_long))
+    cor = map2_dbl(a, b, ~doCor(.x, .y, d_wide)),
+    types = map2_chr(a, b, ~getTypes(.x, .y, d_wide))
   )
 
 mat <- matrix(df$cor, nrow = sqrt(nrow(df)), ncol = sqrt(nrow(df)), byrow = T)
@@ -61,7 +61,7 @@ as_tibble(mat) %>%
   mutate(a = unique(df$a)) %>%
   pivot_longer(cols = -a, names_to = 'b', values_to = 'cor') %>%
   mutate(
-    types = map2_chr(a, b, ~getTypes(.x, .y, d_long)),
+    types = map2_chr(a, b, ~getTypes(.x, .y, d_wide)),
     types = if_else(is.na(cor), NA_character_, types)
   ) %>%
   ggplot(aes(x = a, y = b, fill = cor, colour = types)) +
