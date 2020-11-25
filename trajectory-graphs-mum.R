@@ -51,8 +51,8 @@ mumTrajData <- mumTrajData %>%
     )
   ) %>%
   mutate(
-    Variable = fct_reorder(Variable, scale_order, min),
-    Class = fct_reorder(as.character(Class), scale_order_class, min)
+    Variable = fct_reorder(Variable, scale_order),
+    Class = fct_reorder(Class, scale_order_class)
   )
 
 mumTrajGraph <- mumTrajData %>%
